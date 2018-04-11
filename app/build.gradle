@@ -1,0 +1,122 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        applicationId "zheng.simon.com.frame"
+
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+
+        versionName rootProject.ext.versionName
+        versionCode rootProject.ext.versionCode
+
+        multiDexEnabled true
+//        manifestPlaceholders = [KEY_CHANNEL   : "Develop"]
+
+        ndk {
+            abiFilters 'armeabi-v7a', 'x86'
+        }
+
+        //android 3.0  flavor
+        flavorDimensions "packageChannel"
+        setProperty("archivesBaseName", "frame")
+    }
+
+//    signingConfigs {
+//        debug {
+//            storeFile file("")
+//            storePassword ""
+//            keyAlias ""
+//            keyPassword ""
+//        }
+//
+//        release {
+//            storeFile file("")
+//            storePassword ""
+//            keyAlias ""
+//            keyPassword ""
+//        }
+//    }
+
+
+    buildTypes {
+        release {
+            //Zip代码压缩优化
+            zipAlignEnabled true
+            //移除无用资源
+            shrinkResources false
+            //signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+
+    //Lambda表达式 jack编译工具
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    productFlavors {
+        Develop {}
+        product {}
+
+        productFlavors.all { flavor ->
+            if (!name.equalsIgnoreCase("Develop")) {
+//                manifestPlaceholders = [KEY_CHANNEL: name]
+            }
+        }
+    }
+
+
+}
+
+//添加此代码可依赖aar包
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation deps.kotlin
+    implementation deps.constraint
+    implementation deps.multidex
+    implementation deps.appcompatv7
+    implementation deps.recyclerviewv7
+    implementation deps.supportDesign
+    implementation deps.fastjson
+    implementation deps.BgaBanner
+    implementation deps.welcome
+    //android google 调试工具
+    implementation deps.stetho
+    implementation deps.stethoOkhttp3
+
+    implementation deps.okhttp
+    implementation deps.loggingInterceptor
+    //fps
+//    debugImplementation deps.debugTinydancer
+//    releaseImplementation deps.releaseTinydancer
+//    testImplementation deps.testTinydancer
+
+    implementation project(':jsBridge')
+    implementation project(':Library_PhotoSelecter')
+}
